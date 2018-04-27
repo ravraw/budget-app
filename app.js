@@ -32,6 +32,21 @@ const UIcontroller = (function() {
 //////////// GLOBAL APP CONTROLLER
 
 const controller = (function(budgetctrl, UIctrl) {
+  // eevent-listeners
+  const setUpEvenetListeners = function() {
+    console.log("setupEventListe");
+    document
+      .querySelector(DOM.inputButton)
+      .addEventListener("click", ctrlAddItem);
+
+    document.addEventListener("keypress", function(event) {
+      if (event.keyCode === 13 || event.which === 13) {
+        event.preventDefault();
+        ctrlAddItem();
+      }
+    });
+  };
+
   const DOM = UIctrl.getDOMstrings();
 
   const ctrlAddItem = function() {
@@ -40,13 +55,13 @@ const controller = (function(budgetctrl, UIctrl) {
     const input = UIctrl.getInput();
     console.log(input);
   };
-  document
-    .querySelector(DOM.inputButton)
-    .addEventListener("click", ctrlAddItem);
 
-  document.addEventListener("keypress", function(event) {
-    if (event.keyCode === 13 || event.which === 13) {
-      ctrlAddItem();
+  return {
+    init: function() {
+      console.log("Application has started");
+      setUpEvenetListeners();
     }
-  });
+  };
 })(budgetController, UIcontroller);
+
+controller.init();
