@@ -2,6 +2,28 @@
 
 const budgetController = (function() {
   //code
+  const Expense = function(id, description, value) {
+    this.id = id;
+    this.description;
+    this.value;
+  };
+
+  const Income = function(id, description, value) {
+    this.id = id;
+    this.description;
+    this.value;
+  };
+
+  const data = {
+    allItems: {
+      exp: [],
+      inc: []
+    },
+    totals: {
+      exp: 0,
+      inc: 0
+    }
+  };
 })();
 
 ////////// UI CONTROLLER
