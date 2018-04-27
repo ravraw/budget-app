@@ -4,14 +4,14 @@ const budgetController = (function() {
   //code
   const Expense = function(id, description, value) {
     this.id = id;
-    this.description;
-    this.value;
+    this.description = description;
+    this.value = value;
   };
 
   const Income = function(id, description, value) {
     this.id = id;
-    this.description;
-    this.value;
+    this.description = description;
+    this.value = value;
   };
 
   const data = {
@@ -22,6 +22,37 @@ const budgetController = (function() {
     totals: {
       exp: 0,
       inc: 0
+    }
+  };
+
+  return {
+    addItem: function(type, des, val) {
+      let ID, newItem;
+      console.log(des, val);
+
+      // create new ID --- checks if the exp / inc array length is 0
+      if (data.allItems[type].length > 0) {
+        ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
+      } else {
+        ID = 0;
+      }
+
+      // create new item based on type ---- 'exp' or 'inc'
+      if (type === "exp") {
+        newItem = new Expense(ID, des, val);
+      } else if (type === "inc") {
+        console.log(des, val);
+        newItem = new Income(ID, des, val);
+      }
+      console.log(newItem);
+      //addes the new item to the data according to the type ---- 'exp' or 'inc'
+      data.allItems[type].push(newItem);
+      console.log(data);
+      // return new item
+      return newItem;
+    },
+    testing: function() {
+      console.log(data);
     }
   };
 })();
@@ -70,12 +101,21 @@ const controller = (function(budgetctrl, UIctrl) {
   };
 
   const DOM = UIctrl.getDOMstrings();
-
+  let input, newItem;
   const ctrlAddItem = function() {
     //code
-    // get inputfields values
-    const input = UIctrl.getInput();
+    // 1. get inputfields values
+    input = UIctrl.getInput();
     console.log(input);
+    // 2 Add the item to the budget controller.
+    newItem = budgetctrl.addItem(input.type, input.description, input.value);
+    console.log(newItem);
+
+    //3 Add all items to the  UI
+
+    //4 calculate the budget
+
+    //5 Display the budget on the UI
   };
 
   return {
