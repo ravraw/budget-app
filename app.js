@@ -1,13 +1,5 @@
 const budgetController = (function() {
-  const x = 28;
-  const add = function(a) {
-    return x + a;
-  };
-  return {
-    publicTest: function(b) {
-      return add(b);
-    }
-  };
+  //code
 })();
 
 const UIcontroller = (function() {
@@ -15,11 +7,15 @@ const UIcontroller = (function() {
 })();
 
 const controller = (function(budgetctrl, UIctrl) {
-  const z = budgetController.publicTest(5);
-
-  return {
-    anotherPublic: function() {
-      console.log(z);
-    }
+  var ctrlAddItem = function() {
+    //code
+    console.log("enetered");
   };
+  document.querySelector(".add__btn").addEventListener("click", ctrlAddItem);
+
+  document.addEventListener("keypress", function(event) {
+    if (event.keyCode === 13 || event.which === 13) {
+      ctrlAddItem();
+    }
+  });
 })(budgetController, UIcontroller);
