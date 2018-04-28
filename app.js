@@ -66,7 +66,9 @@ const UIcontroller = (function() {
     inputType: ".add__type",
     inputDescription: ".add__description",
     inputValue: ".add__value",
-    inputButton: ".add__btn"
+    inputButton: ".add__btn",
+    incomeContainer: ".income__list",
+    expensesContainer: ".expenses__list"
   };
   return {
     getInput: function() {
@@ -75,6 +77,49 @@ const UIcontroller = (function() {
         description: document.querySelector(DOMstrings.inputDescription).value,
         value: document.querySelector(DOMstrings.inputValue).value
       };
+    },
+    addListItem: function(obj, type) {
+      let html, newHtml, element;
+
+      // createhtml string with placeholder text
+
+      if (type === "inc") {
+        element = DOMstrings.incomeContainer;
+
+        html = `<div class = "item clearfix" id = "income-%id%" >
+            <div class="item__description">%description%</div>
+            <div class="right clearfix">
+              <div class="item__value">%value%</div>
+              <div class="item__delete">
+                <button class="item__delete--btn">
+                  X
+                </button>
+              </div>
+            </div>
+          </div>`;
+      } else if (type === "exp") {
+        element = DOMstrings.expensesContainer;
+        html = `<div class="item clearfix" id="expense-%id%">
+            <div class="item__description">%description%</div>
+            <div class="right clearfix">
+              <div class="item__value">%value%</div>
+              <div class="item__percentage">21%</div>
+              <div class="item__delete">
+                <button class="item__delete--btn">
+                 X
+                </button>
+              </div>
+            </div>
+          </div>`;
+      }
+
+      // replace placeholder text with some actualdata
+      newHtml = html.replace("%id%", obj.id);
+      newHtml = newHtml.replace("%description%", obj.description);
+      newHtml = newHtml.replace("%value%", obj.value);
+
+      //Insert html into the dom
+      document.querySelector(element).insertAdjacentHTML("beforeend", newHtml);
     },
     getDOMstrings: function() {
       return DOMstrings;
@@ -95,6 +140,7 @@ const controller = (function(budgetctrl, UIctrl) {
     document.addEventListener("keypress", function(event) {
       if (event.keyCode === 13 || event.which === 13) {
         event.preventDefault();
+        event.stopPropagation();
         ctrlAddItem();
       }
     });
@@ -112,6 +158,7 @@ const controller = (function(budgetctrl, UIctrl) {
     console.log(newItem);
 
     //3 Add all items to the  UI
+    UIctrl.addListItem(newItem, input.type);
 
     //4 calculate the budget
 
