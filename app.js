@@ -13,6 +13,13 @@ const budgetController = (function() {
     this.description = description;
     this.value = value;
   };
+  const calculateTotal = function(type) {
+    let sum = 0;
+    data.allItems[type].forEach(function(cur) {
+      sum += cur.value;
+    });
+    data.totals[type] = sum;
+  };
 
   const data = {
     allItems: {
@@ -22,15 +29,17 @@ const budgetController = (function() {
     totals: {
       exp: 0,
       inc: 0
-    }
+    },
+    budget: 0,
+    percentage: -1
   };
 
   return {
     addItem: function(type, des, val) {
       let ID, newItem;
-      console.log(des, val);
 
       // create new ID --- checks if the exp / inc array length is 0
+
       if (data.allItems[type].length > 0) {
         ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
       } else {
@@ -38,21 +47,38 @@ const budgetController = (function() {
       }
 
       // create new item based on type ---- 'exp' or 'inc'
+
       if (type === "exp") {
         newItem = new Expense(ID, des, val);
       } else if (type === "inc") {
-        console.log(des, val);
         newItem = new Income(ID, des, val);
       }
-      console.log(newItem);
+
       //addes the new item to the data according to the type ---- 'exp' or 'inc'
       data.allItems[type].push(newItem);
-      console.log(data);
+
       // return new item
       return newItem;
     },
     testing: function() {
       console.log(data);
+    },
+    calculateBudget: function() {
+      //1 calculate total income and expense
+      calculateTotal("inc");
+      calculateTotal("exp");
+      //2 calculate budget : income - expense
+      data.budget = data.totals.inc - data.totals.exp;
+      //3 calculate % of expenses to budget.
+      data.percentage = Math.round(data.totals.exp / data.totals.inc * 100);
+    },
+    getBudget: function() {
+      return {
+        budget: data.budget,
+        totalInc: data.totals.inc,
+        totalExp: data.totals.exp,
+        percentage: data.percentage
+      };
     }
   };
 })();
@@ -75,7 +101,7 @@ const UIcontroller = (function() {
       return {
         type: document.querySelector(DOMstrings.inputType).value,
         description: document.querySelector(DOMstrings.inputDescription).value,
-        value: document.querySelector(DOMstrings.inputValue).value
+        value: parseFloat(document.querySelector(DOMstrings.inputValue).value)
       };
     },
     addListItem: function(obj, type) {
@@ -121,24 +147,27 @@ const UIcontroller = (function() {
       //Insert html into the dom
       document.querySelector(element).insertAdjacentHTML("beforeend", newHtml);
     },
-    // clearFields: function() {
-    //   let fields;
-    //   fields = document.querySelectorAll("input");
-
-    //   fields.forEach(element => {
-    //     element.value = "";
-    //   });
-    // },
+    // clearFields : function(){
+    //      let fields = document.querySelectorAll("input");
+    //     ​ fields.forEach(el => el.value = "");
+    //      fields[0].focus();
+    //     },
     clearFields: function() {
-      let fields, fieldsArr;
-      fields = document.querySelectorAll(
-        DOMstrings.inputDescription + "," + DOMstrings.inputValue
-      );
-      fieldsArr = Array.prototype.slice.call(fields);
-      fieldsArr.forEach(function(current, index, array) {
-        current.value = "";
-      });
+      let fields = document.querySelectorAll("input");
+      fields.forEach(el => (el.value = ""));
+      fields[0].focus();
     },
+    // clearFields: function() {
+    //   let fields, fieldsArr;
+    //   fields = document.querySelectorAll(
+    //     DOMstrings.inputDescription + "," + DOMstrings.inputValue
+    //   );
+    //   fieldsArr = Array.prototype.slice.call(fields);
+    //   fieldsArr.forEach(function(current, index, array) {
+    //     current.value = "";
+    //   });
+    //   fieldsArr[0].focus();
+    // },
     getDOMstrings: function() {
       return DOMstrings;
     }
@@ -150,7 +179,6 @@ const UIcontroller = (function() {
 const controller = (function(budgetctrl, UIctrl) {
   // eevent-listeners
   const setUpEvenetListeners = function() {
-    console.log("setupEventListe");
     document
       .querySelector(DOM.inputButton)
       .addEventListener("click", ctrlAddItem);
@@ -166,24 +194,34 @@ const controller = (function(budgetctrl, UIctrl) {
 
   const DOM = UIctrl.getDOMstrings();
   let input, newItem;
+
+  const updateBudget = function() {
+    //1. calculate the budget
+    budgetctrl.calculateBudget();
+    //2. Return the budget
+    let budget = budgetctrl.getBudget();
+    //3. Display the budget on the UI
+    console.log(budget);
+  };
+
   const ctrlAddItem = function() {
     //code
     // 1. get inputfields values
     input = UIctrl.getInput();
-    console.log(input);
-    // 2 Add the item to the budget controller.
-    newItem = budgetctrl.addItem(input.type, input.description, input.value);
-    console.log(newItem);
 
-    //3 Add all items to the  UI
-    UIctrl.addListItem(newItem, input.type);
+    if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
+      // 2 Add the item to the budget controller.
+      newItem = budgetctrl.addItem(input.type, input.description, input.value);
 
-    //4 Clear the fields
-    UIctrl.clearFields();
+      //3 Add all items to the  UI
+      UIctrl.addListItem(newItem, input.type);
 
-    //5 calculate the budget
+      //4 Clear the fields
+      UIctrl.clearFields();
 
-    //6 Display the budget on the UI
+      //5 calculate and update budget
+      updateBudget();
+    }
   };
 
   return {
