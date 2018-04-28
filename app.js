@@ -92,7 +92,7 @@ const UIcontroller = (function() {
               <div class="item__value">%value%</div>
               <div class="item__delete">
                 <button class="item__delete--btn">
-                  X
+                  <i class="ion-ios-close-outline" />
                 </button>
               </div>
             </div>
@@ -101,12 +101,12 @@ const UIcontroller = (function() {
         element = DOMstrings.expensesContainer;
         html = `<div class="item clearfix" id="expense-%id%">
             <div class="item__description">%description%</div>
-            <div class="right clearfix">
+            <div class="right clearfix">git 
               <div class="item__value">%value%</div>
               <div class="item__percentage">21%</div>
               <div class="item__delete">
                 <button class="item__delete--btn">
-                 X
+                  <i class="ion-ios-close-outline" />
                 </button>
               </div>
             </div>
